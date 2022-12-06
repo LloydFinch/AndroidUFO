@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Handler源码分析之三 Native层实现机制 | AndroidUFO</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/imgs/favicon.webp">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="description" content="Make learning easier and more funny">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <link rel="preload" href="/assets/css/0.styles.52bb15e4.css" as="style"><link rel="preload" href="/assets/js/app.970fe2fa.js" as="script"><link rel="preload" href="/assets/js/3.105e31ae.js" as="script"><link rel="preload" href="/assets/js/1.f5ff82f2.js" as="script"><link rel="preload" href="/assets/js/23.d07425f7.js" as="script"><link rel="prefetch" href="/assets/js/10.ce7d6f98.js"><link rel="prefetch" href="/assets/js/11.4c14f4c8.js"><link rel="prefetch" href="/assets/js/12.f31e0065.js"><link rel="prefetch" href="/assets/js/13.3fe8d2b9.js"><link rel="prefetch" href="/assets/js/14.fa14397a.js"><link rel="prefetch" href="/assets/js/15.29317853.js"><link rel="prefetch" href="/assets/js/16.4a6b0d94.js"><link rel="prefetch" href="/assets/js/17.018706ec.js"><link rel="prefetch" href="/assets/js/18.848628ff.js"><link rel="prefetch" href="/assets/js/19.204e537f.js"><link rel="prefetch" href="/assets/js/20.237d2e20.js"><link rel="prefetch" href="/assets/js/21.ce758da2.js"><link rel="prefetch" href="/assets/js/22.ccbdd9f1.js"><link rel="prefetch" href="/assets/js/24.866ee66d.js"><link rel="prefetch" href="/assets/js/25.60fe06eb.js"><link rel="prefetch" href="/assets/js/26.7f7b8405.js"><link rel="prefetch" href="/assets/js/27.957b2b34.js"><link rel="prefetch" href="/assets/js/28.2279ea42.js"><link rel="prefetch" href="/assets/js/29.5c01ea68.js"><link rel="prefetch" href="/assets/js/30.5180f9e8.js"><link rel="prefetch" href="/assets/js/31.f1702d44.js"><link rel="prefetch" href="/assets/js/32.7c191c5d.js"><link rel="prefetch" href="/assets/js/33.e935a3f1.js"><link rel="prefetch" href="/assets/js/34.129b01c6.js"><link rel="prefetch" href="/assets/js/35.6dd21f6a.js"><link rel="prefetch" href="/assets/js/36.6d01a8b5.js"><link rel="prefetch" href="/assets/js/37.803ae25d.js"><link rel="prefetch" href="/assets/js/38.23c33b61.js"><link rel="prefetch" href="/assets/js/39.54053cb6.js"><link rel="prefetch" href="/assets/js/4.12eddef8.js"><link rel="prefetch" href="/assets/js/40.f9f880af.js"><link rel="prefetch" href="/assets/js/41.9b85f8d8.js"><link rel="prefetch" href="/assets/js/42.e22fb51a.js"><link rel="prefetch" href="/assets/js/43.bfd16f57.js"><link rel="prefetch" href="/assets/js/44.05204104.js"><link rel="prefetch" href="/assets/js/45.d69b064f.js"><link rel="prefetch" href="/assets/js/46.b2186401.js"><link rel="prefetch" href="/assets/js/47.dbe0be15.js"><link rel="prefetch" href="/assets/js/48.fc924cc9.js"><link rel="prefetch" href="/assets/js/49.a4327c82.js"><link rel="prefetch" href="/assets/js/5.970f8e66.js"><link rel="prefetch" href="/assets/js/50.988e6565.js"><link rel="prefetch" href="/assets/js/51.c29c6476.js"><link rel="prefetch" href="/assets/js/52.9bd2bd66.js"><link rel="prefetch" href="/assets/js/53.a72c5ac6.js"><link rel="prefetch" href="/assets/js/54.7251b141.js"><link rel="prefetch" href="/assets/js/55.43f9cab0.js"><link rel="prefetch" href="/assets/js/56.4405b661.js"><link rel="prefetch" href="/assets/js/57.2d85c954.js"><link rel="prefetch" href="/assets/js/58.800ded95.js"><link rel="prefetch" href="/assets/js/59.9691b2d8.js"><link rel="prefetch" href="/assets/js/6.da614f42.js"><link rel="prefetch" href="/assets/js/60.f41fbf77.js"><link rel="prefetch" href="/assets/js/61.48328c7e.js"><link rel="prefetch" href="/assets/js/62.5e275ce3.js"><link rel="prefetch" href="/assets/js/63.8bb4175b.js"><link rel="prefetch" href="/assets/js/64.966d484b.js"><link rel="prefetch" href="/assets/js/65.8580de1a.js"><link rel="prefetch" href="/assets/js/66.b44e0960.js"><link rel="prefetch" href="/assets/js/67.0c212063.js"><link rel="prefetch" href="/assets/js/68.f7c66de4.js"><link rel="prefetch" href="/assets/js/69.88aca34a.js"><link rel="prefetch" href="/assets/js/7.754cb4bb.js"><link rel="prefetch" href="/assets/js/70.ee19fda9.js"><link rel="prefetch" href="/assets/js/71.4a041a07.js"><link rel="prefetch" href="/assets/js/8.59f786fd.js"><link rel="prefetch" href="/assets/js/9.7d1f2bca.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.52bb15e4.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar" data-v-1aefc0b4><div data-v-1aefc0b4><div id="loader-wrapper" class="loading-wrapper" data-v-d48f4d20 data-v-1aefc0b4 data-v-1aefc0b4><div class="loader-main" data-v-d48f4d20><div data-v-d48f4d20></div><div data-v-d48f4d20></div><div data-v-d48f4d20></div><div data-v-d48f4d20></div></div> <!----> <!----></div> <div class="password-shadow password-wrapper-out" style="display:none;" data-v-25ba6db2 data-v-1aefc0b4 data-v-1aefc0b4><h3 class="title" data-v-25ba6db2 data-v-25ba6db2>AndroidUFO</h3> <p class="description" data-v-25ba6db2 data-v-25ba6db2>Make learning easier and more funny</p> <label id="box" class="inputBox" data-v-25ba6db2 data-v-25ba6db2><input type="password" value="" data-v-25ba6db2> <span data-v-25ba6db2>Konck! Knock!</span> <button data-v-25ba6db2>OK</button></label> <div class="footer" data-v-25ba6db2 data-v-25ba6db2><span data-v-25ba6db2><i class="iconfont reco-theme" data-v-25ba6db2></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-25ba6db2>vuePress-theme-reco</a></span> <span data-v-25ba6db2><i class="iconfont reco-copyright" data-v-25ba6db2></i> <a data-v-25ba6db2><span data-v-25ba6db2>LloydFinch</span>
+            
+          <!---->
+          2022
+        </a></span></div></div> <div class="hide" data-v-1aefc0b4><header class="navbar" data-v-1aefc0b4><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/imgs/logo.png" alt="AndroidUFO" class="logo"> <span class="site-name">AndroidUFO</span></a> <div class="links"><div class="color-picker"><a class="color-button"><i class="iconfont reco-color"></i></a> <div class="color-picker-menu" style="display:none;"><div class="mode-options"><h4 class="title">Choose mode</h4> <ul class="color-mode-options"><li class="dark">dark</li><li class="auto active">auto</li><li class="light">light</li></ul></div></div></div> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/算法/" class="nav-link"><i class="undefined"></i>
+  算法
+</a></li><li class="dropdown-item"><!----> <a href="/categories/系统/" class="nav-link"><i class="undefined"></i>
+  系统
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Java/" class="nav-link"><i class="undefined"></i>
+  Java
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Android/" class="nav-link"><i class="undefined"></i>
+  Android
+</a></li><li class="dropdown-item"><!----> <a href="/categories/kotlin/" class="nav-link"><i class="undefined"></i>
+  kotlin
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Compose/" class="nav-link"><i class="undefined"></i>
+  Compose
+</a></li><li class="dropdown-item"><!----> <a href="/categories/架构/" class="nav-link"><i class="undefined"></i>
+  架构
+</a></li><li class="dropdown-item"><!----> <a href="/categories/book/" class="nav-link"><i class="undefined"></i>
+  book
+</a></li><li class="dropdown-item"><!----> <a href="/categories/读书会/" class="nav-link"><i class="undefined"></i>
+  读书会
+</a></li><li class="dropdown-item"><!----> <a href="/categories/随笔/" class="nav-link"><i class="undefined"></i>
+  随笔
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div> <!----></nav></div></header> <div class="sidebar-mask" data-v-1aefc0b4></div> <aside class="sidebar" data-v-1aefc0b4><div class="personal-info-wrapper" data-v-39576ba9 data-v-1aefc0b4><img src="/imgs/favicon.webp" alt="author-avatar" class="personal-img" data-v-39576ba9> <h3 class="name" data-v-39576ba9>
+    LloydFinch
+  </h3> <div class="num" data-v-39576ba9><div data-v-39576ba9><h3 data-v-39576ba9>61</h3> <h6 data-v-39576ba9>Articles</h6></div> <div data-v-39576ba9><h3 data-v-39576ba9>52</h3> <h6 data-v-39576ba9>Tags</h6></div></div> <ul class="social-links" data-v-39576ba9><li class="social-item" data-v-39576ba9><i class="iconfont reco-juejin" style="color:#849b87;" data-v-39576ba9></i></li><li class="social-item" data-v-39576ba9><i class="iconfont reco-wechat" style="color:#f8b26a;" data-v-39576ba9></i></li></ul> <hr data-v-39576ba9></div> <nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/算法/" class="nav-link"><i class="undefined"></i>
+  算法
+</a></li><li class="dropdown-item"><!----> <a href="/categories/系统/" class="nav-link"><i class="undefined"></i>
+  系统
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Java/" class="nav-link"><i class="undefined"></i>
+  Java
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Android/" class="nav-link"><i class="undefined"></i>
+  Android
+</a></li><li class="dropdown-item"><!----> <a href="/categories/kotlin/" class="nav-link"><i class="undefined"></i>
+  kotlin
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Compose/" class="nav-link"><i class="undefined"></i>
+  Compose
+</a></li><li class="dropdown-item"><!----> <a href="/categories/架构/" class="nav-link"><i class="undefined"></i>
+  架构
+</a></li><li class="dropdown-item"><!----> <a href="/categories/book/" class="nav-link"><i class="undefined"></i>
+  book
+</a></li><li class="dropdown-item"><!----> <a href="/categories/读书会/" class="nav-link"><i class="undefined"></i>
+  读书会
+</a></li><li class="dropdown-item"><!----> <a href="/categories/随笔/" class="nav-link"><i class="undefined"></i>
+  随笔
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div> <!----></nav> <!----> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-25ba6db2 data-v-1aefc0b4><h3 class="title" data-v-25ba6db2 data-v-25ba6db2>Handler源码分析之三 Native层实现机制</h3> <!----> <label id="box" class="inputBox" data-v-25ba6db2 data-v-25ba6db2><input type="password" value="" data-v-25ba6db2> <span data-v-25ba6db2>Konck! Knock!</span> <button data-v-25ba6db2>OK</button></label> <div class="footer" data-v-25ba6db2 data-v-25ba6db2><span data-v-25ba6db2><i class="iconfont reco-theme" data-v-25ba6db2></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-25ba6db2>vuePress-theme-reco</a></span> <span data-v-25ba6db2><i class="iconfont reco-copyright" data-v-25ba6db2></i> <a data-v-25ba6db2><span data-v-25ba6db2>LloydFinch</span>
+            
+          <!---->
+          2022
+        </a></span></div></div> <div data-v-1aefc0b4><main class="page"><section><div class="page-title"><h1 class="title">Handler源码分析之三 Native层实现机制</h1> <div data-v-f875f3fc><i class="iconfont reco-account" data-v-f875f3fc><span data-v-f875f3fc>LloydFinch</span></i> <i class="iconfont reco-date" data-v-f875f3fc><span data-v-f875f3fc>7/9/2021</span></i> <!----> <i class="tags iconfont reco-tag" data-v-f875f3fc><span class="tag-item" data-v-f875f3fc>Android</span><span class="tag-item" data-v-f875f3fc>源码</span><span class="tag-item" data-v-f875f3fc>Handler</span></i></div></div> <div class="theme-reco-content content__default"><p>前面两章我们讲解了Handler的基本使用，以及异步消息的作用，本章我们深入理解一下Handler的native层，我们在第一章知道Handler的构建需要先创建Looper，而创建Looper需要先创建MessageQueue，我们直接来看MessageQueue的构造，顺便放上native相关的变量。</p> <h2 id="_1-构造函数"><a href="#_1-构造函数" class="header-anchor">#</a> 1 构造函数</h2> <div class="language-java line-numbers-mode"><pre class="language-java"><code><span class="token keyword">package</span> <span class="token namespace">android<span class="token punctuation">.</span>os</span><span class="token punctuation">;</span>
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">class</span> <span class="token class-name">MessageQueue</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">long</span> mPtr<span class="token punctuation">;</span> <span class="token comment">//这个mPtr是native层返回的</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">static</span> <span class="token keyword">long</span> <span class="token function">nativeInit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">nativeDestroy</span><span class="token punctuation">(</span><span class="token keyword">long</span> ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">void</span> <span class="token function">nativePollOnce</span><span class="token punctuation">(</span><span class="token keyword">long</span> ptr<span class="token punctuation">,</span> <span class="token keyword">int</span> timeoutMillis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">nativeWake</span><span class="token punctuation">(</span><span class="token keyword">long</span> ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">static</span> <span class="token keyword">boolean</span> <span class="token function">nativeIsPolling</span><span class="token punctuation">(</span><span class="token keyword">long</span> ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">native</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">nativeSetFileDescriptorEvents</span><span class="token punctuation">(</span><span class="token keyword">long</span> ptr<span class="token punctuation">,</span> <span class="token keyword">int</span> fd<span class="token punctuation">,</span> <span class="token keyword">int</span> events<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">MessageQueue</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> quitAllowed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mQuitAllowed <span class="token operator">=</span> quitAllowed<span class="token punctuation">;</span>
+        mPtr <span class="token operator">=</span> <span class="token function">nativeInit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//这里调用了第一个native函数，对应native层的android_os_MessageQueue.cpp的android_os_MessageQueue_nativeInit，记住这个返回值</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br></div></div><p>我们来看下对应的native函数:</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>static jlong android_os_MessageQueue_nativeInit(JNIEnv* env, jclass clazz) {
+    //创建native层的MessageQueue
+    NativeMessageQueue* nativeMessageQueue = new NativeMessageQueue();
+    //...
+    //计数器加1
+    nativeMessageQueue-&gt;incStrong(env);
+    //将native层的MessageQueue指针转换成long并返回给java层，也就是java层的mPtr
+    return reinterpret_cast&lt;jlong&gt;(nativeMessageQueue);
+}
+
+//NativeMessateQueue的构造函数
+NativeMessageQueue::NativeMessageQueue():mPollEnv(NULL), mPollObj(NULL), mExceptionObj(NULL) {
+    mLooper = Looper::getForThread(); //从当前Thread中获取Looper
+    if (mLooper == NULL) { 
+        mLooper = new Looper(false); //没有就创建
+        Looper::setForThread(mLooper); //放入当前线程
+    }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br></div></div><p>接着我们来看native层Looper的构造函数</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>Looper::Looper(bool allowNonCallbacks): mAllowNonCallbacks(allowNonCallbacks),
+    //...建立文件描述符
+    mWakeEventFd.reset(eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC));
+    //...建立epoll机制
+    rebuildEpollLocked();
+}
+
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br></div></div><h3 id="linux的epoll机制"><a href="#linux的epoll机制" class="header-anchor">#</a> Linux的epoll机制</h3> <h4 id="_1-关于fd"><a href="#_1-关于fd" class="header-anchor">#</a> 1 关于fd</h4> <p>在linux上，一切都是以文件的形式存在的，设备、驱动等都是文件，比如binder驱动，这些文件都是以文件描述符fd来描述的，fd是一个非负整数，代表一个文件的编号，linux上每一个进程控制块PCB都会有一个文件描述符映射表，fd就是这个表的索引，这个表的每个项有一个指向已打开的文件的指针。所以我们可以将fd理解为文件、驱动、设备等。</p> <h4 id="_2-epoll的相关方法"><a href="#_2-epoll的相关方法" class="header-anchor">#</a> 2 epoll的相关方法</h4> <ul><li><ol><li>epoll_create: 创建一个epoll对象</li></ol></li> <li><ol start="2"><li>epoll_ctl(epollfd, option, fd, event): 这个方法根据参数可以分为很多作用
+<strong>option可以是下面类型:</strong></li></ol></li></ul> <p>EPOLL_CTL_ADD 添加<br>
+EPOLL_CTL_DEL 删除<br>
+EPOLL_CTL_MOD 修改</p> <p><strong>event可以是下面类型:</strong></p> <p>EPOLLIN 文件描述符可读<br>
+EPOLLOUT 文件描述符可写<br>
+EPOLLERR 文件描述符错误<br>
+EPOLLHUP 文件描述符挂起</p> <ul><li><ol start="3"><li>epoll_wait(epollfd,...): 等待直到epollfd对应的事情发生</li></ol></li></ul> <h4 id="_3-epoll的流程"><a href="#_3-epoll的流程" class="header-anchor">#</a> 3 epoll的流程</h4> <p>可以简单的理解为EPOLLIN和EPOLLOUT，EPOLLIN表示可读，EPOLLOUT表示可写，写入端写入数据后，读出端会立刻感应到，从而去读数据，当读出端读出数据后，写入端会立刻感应到，从而去写数据。</p> <p>接着我们来看一下epoll代码:</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>void Looper::rebuildEpollLocked() {
+    //如果文件描述符已经存在就关闭
+    if (mEpollFd &gt;= 0) {
+        mEpollFd.reset();
+    }
+    //创建一个新的epoll文件描述符，并添加到wake管道    
+    mEpollFd.reset(epoll_create1(EPOLL_CLOEXEC));
+
+    struct epoll_event eventItem; //创建一个epoll事件eventItem
+    memset(&amp; eventItem, 0, sizeof(epoll_event)); //将eventItem清空
+    eventItem.events = EPOLLIN; //设置这个事件类型为EPOLLIN，也就是可读事件
+    eventItem.data.fd = mWakeEventFd.get(); 设置文件描述符为唤醒事件
+
+    //注册唤醒事件到epoll
+    int result = epoll_ctl(mEpollFd.get(), EPOLL_CTL_ADD, mWakeEventFd.get(), &amp;eventItem);
+
+    //注册其他事件
+    for (size_t i = 0; i &lt; mRequests.size(); i++) {
+        const Request&amp; request = mRequests.valueAt(i);
+        struct epoll_event eventItem;
+        request.initEventItem(&amp;eventItem);
+
+        int epollResult = epoll_ctl(mEpollFd.get(), EPOLL_CTL_ADD, request.fd, &amp;eventItem);
+    }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br></div></div><p>到这里我们总结一下:</p> <ul><li>1 我们要创建Handler;</li> <li>2 因为创建Handler需要Looper，所以我们去创建Looper;</li> <li>3 因为创建Looper，需要创建MessageQueue，所以我们去创建MessageQueue;</li> <li>4 在创建MessageQueue的时候，我们发现他调用了nativeInit();</li> <li>5 于是我们进入native层的nativeInit();<strong>这里开始进入native了</strong></li> <li>6 我们在nativeInit中发现创建了native的MessageQueue</li> <li>7 然后我们跟着进入MessageQueue的构造发现创建了native的Looper</li> <li>8 然后我们进入Looper的构造发现 <strong>1 建立文件描述符 2 建立epoll</strong></li> <li>9 然后我们进入建立epoll的代码发现注册了一个唤醒事件</li> <li>10 逻辑结束</li></ul> <p>我们来看post一个消息后发生了什么?</p> <h2 id="_2-发消息"><a href="#_2-发消息" class="header-anchor">#</a> 2 发消息</h2> <p>我们通过第一章直到发送消息最后是要进入MessageQueue的，直接看enqueue即可</p> <div class="language-java line-numbers-mode"><pre class="language-java"><code><span class="token keyword">boolean</span> <span class="token function">enqueueMessage</span><span class="token punctuation">(</span><span class="token class-name">Message</span> msg<span class="token punctuation">,</span> <span class="token keyword">long</span> when<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">synchronized</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">//...</span>
+        <span class="token keyword">boolean</span> needWake<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> when <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> when <span class="token operator">&lt;</span> p<span class="token punctuation">.</span>when<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">//...</span>
+            needWake <span class="token operator">=</span> mBlocked<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token comment">//是否需要唤醒</span>
+            needWake <span class="token operator">=</span> mBlocked <span class="token operator">&amp;&amp;</span> p<span class="token punctuation">.</span>target <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> msg<span class="token punctuation">.</span><span class="token function">isAsynchronous</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//...</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment">//本次逻辑在这里，如果需要唤醒，就调用nativeWake(mPtr)，这个mPtr就是构造函数nativeInit()的那个</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>needWake<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">nativeWake</span><span class="token punctuation">(</span>mPtr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br></div></div><p>我们看下native层的nativeWake():</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>static void android_os_MessageQueue_nativeWake(JNIEnv* env, jclass clazz, jlong ptr) {
+    //根据ptr取出对应的MessageQueue
+    NativeMessageQueue* nativeMessageQueue = reinterpret_cast&lt;NativeMessageQueue*&gt;(ptr);
+    //调用wake()函数
+    nativeMessageQueue-&gt;wake();
+}
+
+void NativeMessageQueue::wake() {
+    //直接调用了Looper的wake()
+   mLooper-&gt;wake();
+}
+
+void Looper::wake() {
+    uint64_t inc = 1;
+    //将唤醒事件的文件描述符mWakeEventFd写入inc，我们通过epoll机制知道，当写入数据的时候，读出端会立刻感知到，
+    //也就是说，此时读出端已经知道有数据写入了，也就是有message消息需要处理了，那么在哪处理呢，对了，就在MessageQueue的next()里面，我们去看
+    ssize_t nWrite = TEMP_FAILURE_RETRY(write(mWakeEventFd, &amp;inc, sizeof(uint64_t)));
+    //...
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br></div></div><p>总结一下:</p> <ul><li>1 我们在Java层send一个message</li> <li>2 最终会调用到java层的MessageQueue的enqueue中</li> <li>3 如果需要唤醒就会去调用nativeWake() <strong>这里开始进入native</strong></li> <li>4 nativeWake最终会调用到native Looper的wake()</li> <li>5 这个wake()最终写入了一个唤醒事件，用于通知有消息写入</li> <li>6 那么我们来看java层怎么收到这个消息</li></ul> <h2 id="_3-收消息"><a href="#_3-收消息" class="header-anchor">#</a> 3 收消息</h2> <p>经过第一章我们知道消息是在Looper.loop()中处理的，又是从MessageQueue.next()中取出的，我们来看MessageQueue.next():</p> <div class="language-java line-numbers-mode"><pre class="language-java"><code><span class="token class-name">Message</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">final</span> <span class="token keyword">long</span> ptr <span class="token operator">=</span> mPtr<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ptr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">int</span> nextPollTimeoutMillis <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">//...</span>
+        <span class="token comment">//ptr就是上面的mPtr，nextPollTimeoutMillis就是休眠时间</span>
+        <span class="token function">nativePollOnce</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> nextPollTimeoutMillis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//...</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br></div></div><p>这里大幅简化了代码，可以看到在开始就调用了nativePollOnce(ptr,time)这个函数，我们看下这个函数:</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>static void android_os_MessageQueue_nativePollOnce(JNIEnv* env, jobject obj, jlong ptr, jint timeoutMillis) {
+    //又是这一行，根据ptr取MessageQueue的
+    NativeMessageQueue* nativeMessageQueue = reinterpret_cast&lt;NativeMessageQueue*&gt;(ptr);
+    //调用MessageQueue的pollOnce()
+    nativeMessageQueue-&gt;pollOnce(env, obj, timeoutMillis);
+}
+
+void NativeMessageQueue::pollOnce(JNIEnv* env, jobject pollObj, int timeoutMillis) {
+    //...
+    //看这句就行，又是调用了Looper的pollOnce，看来native的MessageQueue就是个传话的，真正干事的是Looper，这难道就是传说中的代理模式?
+    mLooper-&gt;pollOnce(timeoutMillis);
+    //...
+}
+
+int Looper::pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData) {
+    int result = 0;
+    //死循环...
+    for (;;) {
+        //死循环结束的条件是result != 0，那就是说如果等于0就一直跑
+        if (result != 0) {
+            //...
+            return result;
+        }
+
+        //等于0就一直跑这个，那就来看这个，pollInner其实是不会返回0的，那也就是说，只要pollInner有返回，就能结束循环
+        result = pollInner(timeoutMillis);
+    }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br></div></div><p>来看下最核心的pollInner方法，参数就是java层传递的那个nextPollTimeoutMillis参数:</p> <div class="language-c++ line-numbers-mode"><pre class="language-text"><code>int Looper::pollInner(int timeoutMillis) {    
+    //...
+    //result的取值有四种: POLL_WAKE = -1 POLL_CALLBACK = -2 POLL_TIMEOUT = -3 POLL_ERROR = -4
+    int result = POLL_WAKE; 
+    //创建事件集合eventItems，EPOLL_MAX_EVENTS=16
+    struct epoll_event eventItems[EPOLL_MAX_EVENTS];
+    
+    //调用epoll_wait()来等待事件，如果有事件，就放入事件集合eventItems中，并返回事件数量，如果没有，就一直等，超时时间为我们传入的timeoutMillis
+    int eventCount = epoll_wait(mEpollFd, eventItems, EPOLL_MAX_EVENTS, timeoutMillis);  
+    
+    //加锁
+    mLock.lock();
+    
+    //如果发生的事件小于0，也就是说没有事件处理，就跳转到Done
+    if (eventCount &lt;= 0) {
+        if (errno == EINTR) {
+            goto Done;
+        }
+        result = POLL_ERROR;
+        goto Done;
+    }
+
+    //没有goto到Done，也就是有事件发生，就跑到这里
+    //遍历事件集合eventItems
+    for (int i = 0; i &lt; eventCount; i++) {
+        //取出文件描述符
+        int fd = eventItems[i].data.fd;
+        //取出事件类型
+        uint32_t epollEvents = eventItems[i].events;
+        if (fd == mWakeEventFd) {//如果文件描述符为mWakeEventFd
+            if (epollEvents &amp; EPOLLIN) {//并且事件类型为EPOLLIN（可读事件）
+                //说明有数据可读，就调用awoken()读数据，直到读完为止，
+                awoken();
+            } else {
+                ALOGW(&quot;Ignoring unexpected epoll events 0x%x on wake event fd.&quot;, epollEvents);
+            }
+        } else {
+            //...
+        }
+    }
+    
+    //这里就是Done，是从if(eventCount&lt;=0)跳转过来的
+    Done:;
+    mNextMessageUptime = LLONG_MAX;
+    //mMessageEnvelopes是一个Vector，存放native层的消息
+    while (mMessageEnvelopes.size() != 0) {
+        nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
+        //取出第一个MessageEnvelope，MessageEnvelop有收件人Hanlder和消息内容Message，可以理解为jave层的Message 
+        const MessageEnvelope&amp; messageEnvelope = mMessageEnvelopes.itemAt(0);
+        //判断消息的执行时间，跟java层的那个 if(message.when &lt;= now)类似
+        if (messageEnvelope.uptime &lt;= now) { //表示消息已经到了执行时间
+            {
+                //取出Handler
+                sp&lt;MessageHandler&gt; handler = messageEnvelope.handler;
+                //取出Message
+                Message message = messageEnvelope.message;
+                mMessageEnvelopes.removeAt(0); //删除，因为接下来就处理了
+                mSendingMessage = true;
+                //释放锁
+                mLock.unlock();
+                //处理消息
+                handler-&gt;handleMessage(message);
+            }
+            mLock.lock();
+            mSendingMessage = false;
+            result = POLL_CALLBACK;
+        } else {//消息还没到执行时间
+            mNextMessageUptime = messageEnvelope.uptime;
+            //跳出循环，进入下一次轮询，java层是计算等待时间nextPollTimeoutMillis
+            break;
+        }
+    }
+    //释放锁
+    mLock.unlock();
+    //...
+    return result;
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br><span class="line-number">73</span><br><span class="line-number">74</span><br><span class="line-number">75</span><br><span class="line-number">76</span><br><span class="line-number">77</span><br></div></div><p><strong>好，来个小结:</strong></p> <ul><li>1 我们要处理消息，所以先取消息，所以进入了java层的MessageQueue</li> <li>2 如果当前消息还不到执行，怎么办，就计算还有多久执行，得出timeout，然后调用nativePollOnce(timeout);</li> <li>3 然后我们进入native的MessageQueue <strong>此处进入native</strong></li> <li>4 我们一路追踪，发现native的MessageQueue就是个靠嘴吃饭的，毛都没干，最终进入了native的Looper里</li> <li>5 我们发现Looper的pollOnce()是个死循环，内部调用了pollInner()，只要pollInner()返回，就跳出循环从而回到java层继续向下执行</li> <li>6 进入pollInner()，我们发现他有三个逻辑<br>
+等待事件，超时时间就是java层传递过来的timeout，如果有事件发生，则会返回发生的事件，并去处理<br>
+有事件发生，就取出事件并处理<br>
+没事件发生，就处理native的Message<br>
+返回result，且result!=0</li> <li>7 返回到jave层，继续向下处理</li></ul> <p><strong>这里有几个问题，我们先来捋一下:</strong></p> <ul><li>1 java层的Message如果不该处理，就会调用nativePollOnce()等待，在代码中哪里等待呢?
+答: 就在native Looper的pollOnce里面的epoll_wait(timeout)，只要时间不到timeout，就会一直等待，等价于卡在这里，不向下执行</li> <li>2 如果我的timeout传递-1，就是一直等待，那不就卡死在这里了吗
+答: 如果在等待期间，有事件发生，那么会立刻返回事件数目，此时向下执行，发现有事件，就会去读取事件并处理，比如java层enqueue事件的时候，就会跑到nativeWake()里面，此时写入一个唤醒事件，此时
+epoll_wait()就会监听到唤醒事件，就会立刻返回，向下执行。</li> <li>3 如果一直没有事件处理呢？
+答: 那么就在等待timeout后，直接返回0，此时就会去执行native的message，代码中的goto Done就是这个逻辑</li></ul> <h2 id="总结"><a href="#总结" class="header-anchor">#</a> 总结</h2> <p>java层通过nativePollOnce(timeout)来实现等待，唤醒的方法要么是过了timeout时间后，超时了，要么是通过nativeWake()来写入一个事件，让native监听到这个事件从而返回。</p> <ul><li>1 现在我们调用handler.sendMessageDelay(msg,3000);让一个message在3秒后执行。</li> <li>2  MessageQueue.next()查看此message，发现msg.when &gt; now，还不该执行，于是就将nextPollTimeoutMillis = 3000,并且将mBlockd = true,然后调用nativePollOnce(nextPollTimeoutMillis)去等待，此时native先跑到pollOnce()，result被初始化为0，所以一直在for里面，然后进入pollOnce()，在epoll_wait()死等着。</li> <li>3 此时我们又调用handler.sendMessage(msg)，让一个message立即执行。</li> <li>4 此时在MessageQueue.enqueueMessage()中，先将这个消息插入到延时3000ms的那个message前面，然后发现when==0，于是就将needwake = mBlocked，也就是true，于是接着就调用了nativeWake(); 于是接着进入native层的Looper的wake()里面写入了一个唤醒事件，此时Looper的epoll_wait()就监听到了，于是立刻返回，处理监听事件后就return result，此时pollOnce()里面因为result!=0，就返回到了java层， 于是MessageQueue的next就立刻活跃起来，马上拿出刚刚sendMessage(msg)的这个msg开始处理，处理完了到下一个(也就是延时3000ms那个)，发现msg.when &gt; now，就继续第2步的等待，后面如果还有新消息，就重复前面的过程，没有新消息就等待epoll_wait()超时返回，超时时间是3000ms，返回后跟上述步骤基本一样。</li></ul></div></section> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated: </span> <span class="time">1/30/2022, 3:38:46 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev"><a href="/android/3_handler_sync_message.html" class="prev">
+            Handler源码分析之二 异步消息的处理
+          </a></span> <span class="next"><a href="/android/3_handler_thread.html">
+            HandlerThread源码剖析
+          </a></span></p></div> <div class="comments-wrapper"><!----></div> <ul class="side-bar sub-sidebar-wrapper" style="width:12rem;" data-v-cb1513f6><li class="level-2" data-v-cb1513f6><a href="/android/3_handler_native.html#_1-构造函数" class="sidebar-link reco-side-_1-构造函数" data-v-cb1513f6>1 构造函数</a></li><li class="level-3" data-v-cb1513f6><a href="/android/3_handler_native.html#linux的epoll机制" class="sidebar-link reco-side-linux的epoll机制" data-v-cb1513f6>Linux的epoll机制</a></li><li class="level-2" data-v-cb1513f6><a href="/android/3_handler_native.html#_2-发消息" class="sidebar-link reco-side-_2-发消息" data-v-cb1513f6>2 发消息</a></li><li class="level-2" data-v-cb1513f6><a href="/android/3_handler_native.html#_3-收消息" class="sidebar-link reco-side-_3-收消息" data-v-cb1513f6>3 收消息</a></li><li class="level-2" data-v-cb1513f6><a href="/android/3_handler_native.html#总结" class="sidebar-link reco-side-总结" data-v-cb1513f6>总结</a></li></ul></main> <!----></div></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div></div></div>
+    <script src="/assets/js/app.970fe2fa.js" defer></script><script src="/assets/js/3.105e31ae.js" defer></script><script src="/assets/js/1.f5ff82f2.js" defer></script><script src="/assets/js/23.d07425f7.js" defer></script>
+  </body>
+</html>
